@@ -1,0 +1,21 @@
+version: '3'
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      WEBSOCKET_ENABLED: true       
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+      DOMAIN: ${DOMAIN}
+      TZ: ${TZ}
+    volumes:
+      - ${DOCKERDIR}/appdata/vaultwarden:/data
+    networks:
+      - npm_proxy
+    ports:
+      - 8080:80    # Web port
+      - 3012:3012  # Web sockets port see on setting up notifications https://vaultwarden.discourse.group/t/how-to-reset-admin-token/452/3
+networks:
+  npm_proxy:
+    external: true

@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 80:80/tcp 
+      - 443:443/tcp 
+      - 443:443/udp 
+      - 3000:3000/tcp
+    volumes:
+      - ${DOCKERDIR}/appdata/adguardhome/work:/opt/adguardhome/work
+      - ${DOCKERDIR}/appdata/adguardhome/config:/opt/adguardhome/conf
+    networks:
+      wireadguard:
+        ipv4_address: 10.2.1.254
+    restart: unless-stopped
+networks:
+  wireadguard:
+    name: wireadguard
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.2.1.0/24
+
+
+
+
+
+
+
+
