@@ -1,0 +1,29 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: 'traefik:2.10'
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    networks:
+      web_proxy:
+        ipv4_address: 10.2.0.253
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+
+      ########################### NETWORKS
+      # You may customize the network subnet (10.2.0.0/24) below as you please.
+      # Docker Compose version 3.5 or higher required to define networks this way.
+
+networks:
+  default:
+    driver: bridge
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.2.0.0/24

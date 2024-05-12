@@ -12,10 +12,10 @@ services:
     environment:
       PLEX_UID: ${PUID}
       PLEX_GID: ${PGID}
-      TZ: ${TZ}                                                                                                               
+      TZ: ${TZ}
     networks:
       - npm_proxy
     restart: unless-stopped
 networks:
-  npm_proxy:
+  web_proxy:
     external: true
