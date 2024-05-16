@@ -1,4 +1,0 @@
-########################### NETWORKS
-networks:
-  default:
-    driver: bridge

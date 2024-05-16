@@ -1,5 +1,5 @@
-version: '3'
 services:
+  # Traefik 2 - Reverse Proxy
   reverse-proxy:
     image: 'traefik:2.10'
     container_name: traefik
@@ -8,8 +8,9 @@ services:
       - '80:80'
       - '443:443'
     networks:
-      web_proxy:
+      t2_proxy:
         ipv4_address: 10.2.0.253
+      socket_proxy:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
