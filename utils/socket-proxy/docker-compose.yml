@@ -4,9 +4,8 @@ services:
     container_name: socket-proxy
     image: tecnativa/docker-socket-proxy
     security_opt:
-      - no-new-privileges: true
+      - no-new-privileges:true
     restart: unless-stopped
-
     networks:
       socket_proxy:
         ipv4_address: 10.0.1.254

@@ -28,5 +28,10 @@ include:
 
   # CORE
   - utils/socket-proxy/docker-compose.yml
-  - apps/traefik2/docker-compose.yml
-  # - apps/portainer/docker-compose.yml
+  - utils/traefik2/docker-compose.yml
+  - utils/portainer/docker-compose.yml
+  #
+  # SECURITY, ANALYTICS, METRICS, LOGS, MONITORING
+  # - utils/crowdsec/docker-compose.yml
+  # - utils/dozzle/docker-compose.yml
+  #
