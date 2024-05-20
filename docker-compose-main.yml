@@ -21,17 +21,42 @@ secrets:
     file: $DOCKERDIR/secrets/basic_auth_credentials
   cf_dns_api_token:
     file: $DOCKERDIR/secrets/cf_dns_api_token
-
+  plex_claim:
+    file: $DOCKERDIR/secrets/plex_claim
 include:
-  ########################### SERVICES
+  # SERVICES
   # PREFIX smg = Saber Media Group
-
+  # ################################################
   # CORE
   - utils/socket-proxy/docker-compose.yml
   - utils/traefik2/docker-compose.yml
   - utils/portainer/docker-compose.yml
-  #
-  # SECURITY, ANALYTICS, METRICS, LOGS, MONITORING
-  # - utils/crowdsec/docker-compose.yml
-  # - utils/dozzle/docker-compose.yml
-  #
+  # ################################################
+  # SECURITY
+  - utils/crowdsec/docker-compose.yml
+  # - utils/crowdsec/traefik-bouncer.yml
+  - utils/crowdsec/cloudflare-bouncer.yml
+  # ################################################
+  # DASHBOARD - FRONTEND
+  - utils/homepage/docker-compose.yml
+  # ################################################
+  # APPS
+  - apps/vaultwarden/docker-compose.yml
+  - apps/plex/docker-compose.yml
+  # ################################################
+  # DOWNLOADERS
+  #- apps/downloaders/qbittorrent/docker-compose.yml
+  #- apps/downloaders/sabnzd/docker-compose.yml
+  # ################################################
+  # PVRS
+  #- apps/pvrs/radarr/docker-compose.yml
+  #- apps/pvrs/sonarr/docker-compose.yml
+  # ################################################
+  # MONITORING
+  - utils/uptime-kuma/docker-compose.yml
+  - utils/dozzle/docker-compose.yml
+  # ################################################
+  # MAINTENANCE
+  # ################################################
+  # DEV TOOLS
+  # ################################################

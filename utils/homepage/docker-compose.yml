@@ -1,0 +1,29 @@
+services:
+  # Homepage - Application Dashboard
+  homepage:
+    container_name: homepage
+    image: ghcr.io/gethomepage/homepage:latest
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - socket_proxy
+      - t2_proxy
+    ports:
+      - "3000:3000"
+    volumes:
+      - $DOCKERDIR/appdata/homepage:/app/config
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.homepage-rtr.entrypoints=websecure"
+      - "traefik.http.routers.homepage-rtr.rule=Host(`$DOMAINNAME`,`www.$DOMAINNAME`)"
+      # Middlewares
+      - "traefik.http.routers.homepage-rtr.middlewares=chain-no-auth@file"
+      # HTTP Services
+      - "traefik.http.routers.homepage-rtr.service=homepage-svc"
+      - "traefik.http.services.homepage-svc.loadbalancer.server.port=3000"
