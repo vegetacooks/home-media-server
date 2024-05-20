@@ -1,10 +1,12 @@
-version: "3"
 services:
   plex:
-    image: plexinc/pms-docker:public
     container_name: plex
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    networks:
+      - t2_proxy
     ports:
-      - 32400:32400
+      - "32400:32400"
     volumes:
       - ${DOCKERDIR}/appdata/plex:/config
       - ${DATADIR}/plex_library:/media
@@ -13,9 +15,17 @@ services:
       PLEX_UID: ${PUID}
       PLEX_GID: ${PGID}
       TZ: ${TZ}
-    networks:
-      - npm_proxy
-    restart: unless-stopped
-networks:
-  web_proxy:
-    external: true
+      HOSTNAME: "smg"
+      PLEX_CLAIM_FILE: "/run/secrets/plex_claim"
+    secrets:
+      - plex_claim
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.plexms-rtr.entrypoints=websecure"
+      - "traefik.http.routers.plexms-rtr.rule=Host(`plex.$DOMAINNAME`)"
+      ## Middlewares
+      - "traefik.http.routers.plexms-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Servicesnoauth
+      - "traefik.http.routers.plexms-rtr.service=plexms-svc"
+      - "traefik.http.services.plexms-svc.loadbalancer.server.port=32400"

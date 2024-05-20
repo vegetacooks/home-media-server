@@ -1,4 +1,3 @@
-version: '3'
 services:
   vaultwarden:
     image: vaultwarden/server:latest
@@ -6,16 +5,21 @@ services:
     restart: unless-stopped
     environment:
       WEBSOCKET_ENABLED: true
-      ADMIN_TOKEN: ${ADMIN_TOKEN}
-      DOMAIN: ${DOMAIN}
+      # ADMIN_TOKEN: ${ADMIN_TOKEN}
+      DOMAIN: "https://vault.${DOMAINNAME}"
       TZ: ${TZ}
     volumes:
       - ${DOCKERDIR}/appdata/vaultwarden:/data
     networks:
-      - npm_proxy
-    ports:
-      - 8080:80 # Web port
-      - 3012:3012 # Web sockets port see on setting up notifications https://vaultwarden.discourse.group/t/how-to-reset-admin-token/452/3
-networks:
-  web_proxy:
-    external: true
+      - t2_proxy
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.vaultwarden-rtr.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vault.$DOMAINNAME`)"
+      - "traefik.http.routers.vaultwarden-rtr.tls=true"
+      ## Middlewares
+      - "traefik.http.routers.vaultwarden-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.vaultwarden-rtr.service=vaultwarden-svc"
+      - "traefik.http.services.vaultwarden-svc.loadbalancer.server.port=80"
