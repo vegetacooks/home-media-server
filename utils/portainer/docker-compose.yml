@@ -2,7 +2,7 @@ services:
   # Portainer - WebUI for Containers
   portainer:
     container_name: portainer
-    image: 'portainer/portainer-ce:2.20.2'
+    image: portainer/portainer-ce:2.20.2
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -11,8 +11,8 @@ services:
       - socket_proxy
     command: [ "-H", "tcp://socket-proxy:2375" ]
     ports:
-      - '9000:9000'
-      - '8000:8000'
+      - "9000:9000"
+      - "8000:8000"
     volumes:
       - ${DOCKERDIR}/appdata/portainer/data:/data
       - /var/run/docker.sock:/var/run/docker.sock # # Use Docker Socket Proxy instead for improved security
