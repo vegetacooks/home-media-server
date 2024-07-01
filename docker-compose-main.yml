@@ -34,23 +34,32 @@ include:
   # ################################################
   # SECURITY
   - utils/crowdsec/docker-compose.yml
-  # - utils/crowdsec/traefik-bouncer.yml
+  - utils/crowdsec/traefik-bouncer.yml
   - utils/crowdsec/cloudflare-bouncer.yml
   # ################################################
   # DASHBOARD - FRONTEND
-  - utils/homepage/docker-compose.yml
+  # - utils/homepage/docker-compose.yml
   # ################################################
   # APPS
   - apps/vaultwarden/docker-compose.yml
   - apps/plex/docker-compose.yml
+  - apps/ebooks/kavita/docker-compose.yml
+  - apps/ebooks/lazylibrarian/docker-compose.yml
+  - apps/filebrowser/docker-compose.yml
   # ################################################
   # DOWNLOADERS
-  #- apps/downloaders/qbittorrent/docker-compose.yml
-  #- apps/downloaders/sabnzd/docker-compose.yml
+  - apps/downloaders/qbittorrent/docker-compose.yml
+  - apps/downloaders/sabnzd/docker-compose.yml
+  - apps/downloaders/metube/docker-compose.yml
   # ################################################
   # PVRS
-  #- apps/pvrs/radarr/docker-compose.yml
-  #- apps/pvrs/sonarr/docker-compose.yml
+  - apps/pvrs/radarr/docker-compose.yml
+  - apps/pvrs/sonarr/docker-compose.yml
+  - apps/pvrs/bazarr/docker-compose.yml
+  - apps/pvrs/lidarr/docker-compose.yml
+  - apps/pvrs/prowlarr/docker-compose.yml
+  # TODO: LOOK FOR ALTERNATIVE TO PICARD
+  # - apps/pvrs/picard/docker-compose.yml 
   # ################################################
   # MONITORING
   - utils/uptime-kuma/docker-compose.yml

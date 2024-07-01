@@ -168,6 +168,6 @@ coverage/
 docker/appdata/*
 docker/logs/*
 docker/secrets/*
-
+docker/shared/certs/*
 
 ########################
