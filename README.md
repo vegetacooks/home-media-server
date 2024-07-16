@@ -25,7 +25,7 @@ Discover other awesome self-hosted services at - https://github.com/awesome-self
 1. Use old laptop or PC and install ubuntu or debian based distros alternatively host it in cloud via VPS like linode or digital ocean
 2. Install docker & docker compose plugin
 2. Git clone the repository
-3. cd into the repository and run docker compose for `nginx-proxy-manager` first than `portainer` second
+3. Run `docker compose -f docker-compose-main.yml up -d`
 4. Run locally or buy a domain 
 
 # Debug tips / Issues you might run into
