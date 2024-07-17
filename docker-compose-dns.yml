@@ -1,0 +1,30 @@
+########################### NETWORKS
+networks:
+  default:
+    driver: bridge
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
+  t2_proxy:
+    name: t2_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.2.0/24
+
+########################### SECRETS
+secrets:
+  cf_dns_api_token:
+    file: $DOCKERDIR/secrets/cf_dns_api_token
+include:
+  # SERVICES
+  # ################################################
+  # CORE
+  # - utils/socket-proxy/docker-compose.yml
+  - utils/traefik2/docker-compose-dns.yml
+  # DNS
+  - utils/adguard_home/docker-compose.yml
+  #- utils/unbound/docker-compose.yml

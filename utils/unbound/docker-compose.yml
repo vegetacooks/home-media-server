@@ -1,7 +1,7 @@
 services:
   unbound:
     container_name: unbound
-    image: mvance/unbound-rpi:latest
+    image: mvance/unbound:latest
     network_mode: host
     volumes:
       - $DOCKERDIR/appdata/unbound:/opt/unbound/etc/unbound

@@ -12,8 +12,6 @@ services:
       - 53:53/udp
       # - 853:853/tcp # DNS-over-TLS
       # - 853:853/udp
-      # - 5443:5443/tcp # DNSCrypt
-      # - 5443:5443/udp
       - 3000:3000/tcp # Admin Web UI
     volumes:
       - ${DOCKERDIR}/appdata/adguardhome/work:/opt/adguardhome/work
@@ -32,4 +30,4 @@ services:
       - "traefik.tcp.routers.adguard-dot.rule=HostSNI(`adguard.$DOMAINNAME`)"
       - "traefik.tcp.routers.adguard-dot.entrypoints=dnsovertls"
       - "traefik.tcp.routers.adguard-dot.tls=true"
-      - "traefik.tcp.services.adguard-dot.loadbalancer.server.port=53"
+      - "traefik.tcp.services.adguard-dot.loadbalancer.server.port=853"
