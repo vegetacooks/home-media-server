@@ -7,27 +7,23 @@ services:
     restart: unless-stopped
     networks:
       - t2_proxy
-    ports:
-      - 53:53/tcp # Plain DNS
-      - 53:53/udp
-      # - 853:853/tcp # DNS-over-TLS
-      # - 853:853/udp
-      - 3000:3000/tcp # Admin Web UI
+    # ports:
+    #   - 3000:3000
     volumes:
       - ${DOCKERDIR}/appdata/adguardhome/work:/opt/adguardhome/work
       - ${DOCKERDIR}/appdata/adguardhome/config:/opt/adguardhome/conf
     labels:
       - "traefik.enable=true"
       # HTTP Routers
-      # Client DoH Config = https://adguard.$DOMAINNAME/dns-query/ClientID
+      # Client DoH Config = https://$DOMAINNAME/dns-query/ClientID
       - "traefik.http.routers.adguard-rtr.entrypoints=websecure"
-      - "traefik.http.routers.adguard-rtr.rule=Host(`adguard.$DOMAINNAME`)"
+      - "traefik.http.routers.adguard-rtr.rule=Host(`$DOMAINNAME`)"
       - "traefik.http.routers.adguard-rtr.tls=true"
       - "traefik.http.routers.adguard-rtr.service=adguard-svc"
-      - "traefik.http.services.adguard-svc.loadbalancer.server.port=3000"
+      - "traefik.http.services.adguard-svc.loadbalancer.server.port=80"
       # TCP Routers
       # Client DoT config = ClientID.$DOMAINNAME
-      - "traefik.tcp.routers.adguard-dot.rule=HostSNI(`adguard.$DOMAINNAME`)"
+      - "traefik.tcp.routers.adguard-dot.rule=HostSNI(`$DOMAINNAME`)"
       - "traefik.tcp.routers.adguard-dot.entrypoints=dnsovertls"
       - "traefik.tcp.routers.adguard-dot.tls=true"
       - "traefik.tcp.services.adguard-dot.loadbalancer.server.port=853"

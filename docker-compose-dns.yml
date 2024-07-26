@@ -2,12 +2,12 @@
 networks:
   default:
     driver: bridge
-  socket_proxy:
-    name: socket_proxy
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.0.1.0/24
+  # socket_proxy:
+  #   name: socket_proxy
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       - subnet: 10.0.1.0/24
   t2_proxy:
     name: t2_proxy
     driver: bridge
@@ -19,6 +19,8 @@ networks:
 secrets:
   cf_dns_api_token:
     file: $DOCKERDIR/secrets/cf_dns_api_token
+  basic_auth_credentials:
+    file: $DOCKERDIR/secrets/basic_auth_credentials
 include:
   # SERVICES
   # ################################################
@@ -27,4 +29,4 @@ include:
   - utils/traefik2/docker-compose-dns.yml
   # DNS
   - utils/adguard_home/docker-compose.yml
-  #- utils/unbound/docker-compose.yml
+  # - utils/unbound/docker-compose.yml
