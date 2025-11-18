@@ -1,0 +1,29 @@
+services:
+  # Trilium Notes
+  trilium-notes:
+    container_name: trilium-notes-app
+    image: triliumnext/trilium:latest
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t2_proxy
+    ports:
+      - "$TRILIUM_PORT:8080"
+    volumes:
+      - $TRILIUM_DATA:/home/node/trilium-data
+
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+    labels:
+      # - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.filebrowser-rtr.entrypoints=websecure"
+      - "traefik.http.routers.filebrowser-rtr.rule=Host(`fb.$DOMAINNAME`)"
+      ## Middlewares
+      - "traefik.http.routers.filebrowser-rtr.middlewares=chain-oauth@file"
+      ## HTTP Services
+      - "traefik.http.routers.filebrowser-rtr.service=filebrowser-svc"
+      - "traefik.http.services.filebrowser-svc.loadbalancer.server.port=$FILEBROWSER_PORT"
