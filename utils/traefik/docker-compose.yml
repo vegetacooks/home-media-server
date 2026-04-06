@@ -1,0 +1,89 @@
+services:
+  # Traefik 3 - Reverse Proxy
+  reverse-proxy:
+    container_name: traefik
+    image: traefik:${TRAEFIK_VERSION_PIN_DEFAULT}
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    depends_on:
+      - socket-proxy
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "$TRAEFIK_PORT:8080/tcp" # Traefik Dashboard
+    networks:
+      t3_proxy:
+        ipv4_address: 10.0.2.253
+      socket_proxy:
+    command:
+      # CLI arguments
+      - --global.checkNewVersion=true
+      - --global.sendAnonymousUsage=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.traefik.address=:8080
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --api=true
+      - --api.dashboard=true
+      - --api.insecure=true
+      # Allow these IPs to set the X-Forwarded-* headers - Cloudflare IPs: https://www.cloudflare.com/ips/
+      - --entrypoints.websecure.forwardedHeaders.trustedIPs=$CLOUDFLARE_IPS,$LOCAL_IPS
+      - --log=true
+      - --log.filePath=/logs/traefik.log
+      - --log.level=INFO # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --accessLog=true
+      - --accessLog.filePath=/logs/access.log
+      - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
+      - --accessLog.filters.statusCodes=204-299,400-499,500-599
+      - --providers.docker=true
+      # - --providers.docker.endpoint=unix:///var/run/docker.sock # Disable for Socket Proxy. Enable otherwise.
+      - --providers.docker.endpoint=$DOCKER_HOST # Enable for Socket Proxy. Disable otherwise.
+      - --providers.docker.exposedByDefault=false # Only Traefik containers with explicit labels will be exposed
+      - --providers.docker.network=t3_proxy
+      # - --providers.swarm.endpoint=tcp://127.0.0.1:2377 # Traefik v3 Swarm
+      - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls.options=tls-opts@file # Reference to TLS options defined in the rules folder
+      # Load dynamic configuration from one or more .toml or .yml files in a directory
+      - --providers.file.directory=/rules # Load dynamic configuration from one or more .toml or .yml files in a directory
+      - --providers.file.watch=true # Only works on top level files in the rules folder
+      # Add dns-cloudflare as default certresolver for all services. 
+      # Also enables TLS and no need to specify on individual services
+      # Using DNS-01 challenge to avoid issues with Cloudflare's proxy and rate limits.
+      # _acme-challenge TXT name and trigger duplicate-record errors with Cloudflare.
+      - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
+      - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME
+      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory 
+      - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
+      - --certificatesresolvers.dns-cloudflare.acme.email=$ADMINEMAIL
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+      # To delay DNS check and reduce LE hitrate
+      - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90
+    volumes:
+      # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy
+      - ${DOCKERDIR}/appdata/traefik/rules:/rules # Dynamic File Provider directory
+      - ${DOCKERDIR}/appdata/traefik/acme/acme.json:/acme.json # Certs File
+      - ${DOCKERDIR}/logs/traefik:/logs # Traefik logs
+    environment:
+      - TZ=$TZ
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_dns_api_token
+      - HTPASSWD_FILE=/run/secrets/basic_auth_credentials # HTTP Basic Auth Credentials
+      # Passing the domain name to traefik container to be able to use the variable in rules. 
+      - DOMAINNAME
+      - ADMINEMAIL
+    secrets:
+      - cf_dns_api_token
+      - basic_auth_credentials
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAINNAME`)"
+      # Services - API
+      - "traefik.http.routers.traefik-rtr.service=api@internal"
+      # Middlewares
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication

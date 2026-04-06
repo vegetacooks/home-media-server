@@ -1,0 +1,16 @@
+services:
+  # Whoami - Test Service to Verify Traefik Configuration
+  whoami:
+    image: containous/whoami
+    container_name: whoami
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
+      - "traefik.http.routers.whoami-rtr.rule=Host(`test.$DOMAINNAME`)"
+      - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
