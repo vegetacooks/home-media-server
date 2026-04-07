@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     networks:
       - socket_proxy
-      - t2_proxy
+      - t3_proxy
     ports:
       - "$DASHBOARD_PORT:3000"
     volumes:
@@ -17,6 +17,7 @@ services:
       TZ: $TZ
       PUID: $PUID
       PGID: $PGID
+      HOMEPAGE_ALLOWED_HOSTS: "home.$DOMAINNAME"
     labels:
       - "traefik.enable=true"
       # HTTP Routers
@@ -26,4 +27,4 @@ services:
       - "traefik.http.routers.homepage-rtr.middlewares=chain-no-auth@file"
       # HTTP Services
       - "traefik.http.routers.homepage-rtr.service=homepage-svc"
-      - "traefik.http.services.homepage-svc.loadbalancer.server.port=$DASHBOARD_PORT"
+      - "traefik.http.services.homepage-svc.loadbalancer.server.port=3000"
