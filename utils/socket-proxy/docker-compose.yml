@@ -2,7 +2,7 @@ services:
   # Docker Socket Proxy - Security Enchanced Proxy for Docker Socket
   socket-proxy:
     container_name: socket-proxy
-    image: tecnativa/docker-socket-proxy
+    image: tecnativa/docker-socket-proxy:latest
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -10,8 +10,8 @@ services:
       socket_proxy:
         ipv4_address: 10.0.1.254
     privileged: true
-    ports:
-      - "127.0.0.1:2375:2375" # Do not expose this to the internet with port forwarding
+    # ports:
+    #   - "127.0.0.1:2375:2375" # Do not expose this to the internet with port forwarding
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
@@ -46,3 +46,4 @@ services:
       - SYSTEM=0
       - TASKS=1 # Portainer
       - VOLUMES=1 # Portainer
+      - DISABLE_IPV6=0 #optional
