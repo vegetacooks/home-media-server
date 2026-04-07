@@ -15,7 +15,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      - LOG_LEVEL=info # debug, info, notice, warning, err, crit, alert, emerg
+      - LOG_LEVEL=warning # debug, info, notice, warning, err, crit, alert, emerg
       ## Variables match the URL prefix (i.e. AUTH blocks access to /auth/* parts of the API, etc.).
       # 0 to revoke access.
       # 1 to grant access.
