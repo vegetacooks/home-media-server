@@ -164,6 +164,9 @@ coverage/
 *.pem
 *.key
 
+# Ignore codex files
+*.codex
+
 # Ignore docker data, logs, secrets
 docker/appdata/*
 docker/logs/*
