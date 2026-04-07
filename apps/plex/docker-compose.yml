@@ -3,10 +3,14 @@ services:
     container_name: plex
     image: plexinc/pms-docker
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     networks:
-      - t2_proxy
-    ports:
-      - "32400:32400"
+      - t3_proxy
+    # Don't expose Plex's port to the host, as Traefik will handle routing and SSL termination. 
+    # This enhances security by keeping Plex's interface inaccessible directly from the outside.
+    # ports:
+    #   - "32400:32400"
     volumes:
       - ${DOCKERDIR}/appdata/plex:/config
       - ${DATADIR}/plex_library:/media
@@ -15,8 +19,9 @@ services:
       PLEX_UID: ${PUID}
       PLEX_GID: ${PGID}
       TZ: ${TZ}
-      HOSTNAME: "smg"
+      HOSTNAME: ${HOSTNAME}
       PLEX_CLAIM_FILE: "/run/secrets/plex_claim"
+      ADVERTISE_IP: "https://plex.${DOMAINNAME}:443"
     secrets:
       - plex_claim
     labels:
@@ -24,6 +29,7 @@ services:
       ## HTTP Routers
       - "traefik.http.routers.plexms-rtr.entrypoints=websecure"
       - "traefik.http.routers.plexms-rtr.rule=Host(`plex.$DOMAINNAME`)"
+      - "traefik.http.routers.plexms-rtr.tls=true"
       ## Middlewares
       - "traefik.http.routers.plexms-rtr.middlewares=chain-no-auth@file"
       ## HTTP Servicesnoauth
