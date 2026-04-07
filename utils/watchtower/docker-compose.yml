@@ -1,0 +1,14 @@
+services:
+  # Watchtower - Automated Docker Container Updates
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - default
+    environment:
+      WATCHTOWER_CLEANUP: "true" # Remove old images after updating
+      WATCHTOWER_POLL_INTERVAL: 300 # Check for updates every 5 minutes
+      # WATCHTOWER_DEBUG: "true" # Enable debug logging   
