@@ -7,7 +7,8 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     depends_on:
-      - socket-proxy
+      socket-proxy:
+        condition: service_healthy
     ports:
       - "80:80/tcp"
       - "443:443/tcp"
@@ -56,7 +57,7 @@ services:
       - --entrypoints.websecure.http.tls.certresolver=dns-cloudflare
       - --entrypoints.websecure.http.tls.domains[0].main=$DOMAINNAME
       - --entrypoints.websecure.http.tls.domains[0].sans=*.$DOMAINNAME
-      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory 
+      # - --certificatesResolvers.dns-cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory # Staging - comment out for production
       - --certificatesResolvers.dns-cloudflare.acme.storage=/acme.json
       - --certificatesresolvers.dns-cloudflare.acme.email=$ADMINEMAIL
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare

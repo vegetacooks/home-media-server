@@ -10,6 +10,12 @@ services:
       socket_proxy:
         ipv4_address: 10.0.1.254
     privileged: true
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:2375/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     # ports:
     #   - "127.0.0.1:2375:2375" # Do not expose this to the internet with port forwarding
     volumes:
