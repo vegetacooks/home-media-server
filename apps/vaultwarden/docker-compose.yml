@@ -2,22 +2,23 @@ services:
   vaultwarden:
     image: vaultwarden/server:latest
     container_name: vaultwarden
+    security_opt:
+      - no-new-privileges:true
     restart: unless-stopped
+    networks:
+      - t3_proxy
     environment:
       WEBSOCKET_ENABLED: true
-      # ADMIN_TOKEN: ${ADMIN_TOKEN}
+      # ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
       DOMAIN: "https://vault.${DOMAINNAME}"
       TZ: ${TZ}
     volumes:
       - ${DOCKERDIR}/appdata/vaultwarden:/data
-    networks:
-      - t2_proxy
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
       - "traefik.http.routers.vaultwarden-rtr.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vault.$DOMAINNAME`)"
-      - "traefik.http.routers.vaultwarden-rtr.tls=true"
       ## Middlewares
       - "traefik.http.routers.vaultwarden-rtr.middlewares=chain-no-auth@file"
       ## HTTP Services
